@@ -1,0 +1,113 @@
+body {
+  color: #333;
+  font-family: sans-serif;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  
+  position: absolute;
+  text-transform: uppercase;
+  font-size: .9rem;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  
+  margin: 0;
+}
+
+#visualizerContainer {
+  width: 100%;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+#visualizer {
+  width: 100%;
+  display: flex;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.platformGroup {
+  flex-shrink: 0;
+}
+
+.item { 
+  margin: 20px;
+  display: inline-block;
+}
+
+.itemLabel {
+  text-align: center;
+}
+
+.iconBound {
+  margin: 0 auto;
+  margin-top: 5px;
+  border: 1px dashed #333;
+  border-radius: 100%;
+  background-color: #EEE;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconCircle {
+  border: 1px solid #333;
+  border-radius: 100%;
+  background-color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 1.1rem;
+}
+
+#controls {
+  flex-shrink: 0;
+  display: flex;
+  width: 100%;
+  background: #EEE;
+  border-top: 1px solid #888;
+}
+
+.controlHeading {
+  width: 100%;
+  text-align: center;
+}
+
+.controlGroup {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 10px 10px 10px;
+}
+
+button {
+  border: 3px solid #333;
+  padding: 10px 20px;
+  margin: 15px 30px;
+  text-transform: uppercase;
+  outline: none;
+  background: none;
+  font-size: 1.1rem;
+}
+
+button:hover {
+  background-color: #333;
+  color: white;
+  transition: all .3s ease-in-out;
+}
+
+button.selected {
+  background-color: #333;
+  color: white;
+}
