@@ -7,8 +7,13 @@
  *  creates the visualization.
  */
 
+
+
+
+// -- CONSTANT DEFINITIONS -- // 
+
 // Useful groupings of categories
-const groups = {
+const GROUPS = {
   Total: ["Total"],
   Age: ["18-29", "30-49", "50-64", "65+"],
   Gender: ["Men", "Women"],
@@ -19,7 +24,7 @@ const groups = {
 };
 
 // Set of platforms in data
-const platforms = [
+const PLATFORMS = [
   "Tumblr",
   "Facebook",
   "Pinterest",
@@ -28,17 +33,29 @@ const platforms = [
   "Twitter",
 ];
 
-let parameters = {
-  platform: platforms,
-  category: groups.Total,
+// Intial parameter settings 
+// NOTE: the es6 const definition allows object attributes to be changed,
+// just not for the variable to be redefined. These attributes ARE changed
+// frequently by the code.
+const parameters = {
+  platform: PLATFORMS,
+  category: GROUPS.Total,
 }
 
+
+
+
+// -- FUNCTION DEFINITIONS -- //
+
 /**
- * Retreives data which matches the passed parameter object.
- * Available parameters are platform and category, which
- * may be either a single string, or an array of strings.
- * Capitalization must be exact. An empty object will return
- * all available data.
+ * Retreives data filtered down to the passed parameters.
+ * Parameters may be either a single string, or an array of strings.
+ * Capitalization must be exact. An empty parameter object will
+ * return all available data unfiltered.
+ * 
+ * @param {Object} An object of keyword arguments to specify
+ *                    the filter to apply to the data. Valid
+ *                    keywords are platform and category
  */
 function getDataWhere({platform = null, category = null}) {
   return data.filter((datum) => {
@@ -80,15 +97,21 @@ function getDataWhere({platform = null, category = null}) {
   });
 };
 
+/**
+ * Given a parameters object, generates the charts from start to finish
+ * @param {Object} parameters The platform and category filters
+ */
 function generateCharts(parameters) {
   
-  // Create a div for each platform
+  // Get a selector based on the submitted platforms parameter
   const t1 = d3.select("#visualizer")
     .selectAll(".platformGroup")
     .data(parameters.platform, d => JSON.stringify(d));
   
+  // Clear previous platform GROUPS
   t1.exit().remove();
   
+  // Create a row for each platform
   t1.enter()
     .append("div")
     .classed({platformGroup: true})
@@ -96,10 +119,12 @@ function generateCharts(parameters) {
       id: d => 'platform-group-' + d,
   });
 
-  //
+  // Create the items and their nested elements within each platformGroup
   let t2;
   let item;
   parameters.platform.forEach(p => {
+    
+    // Get a selector based on the platform and category parameters
     t2 = d3.select("#visualizer")
       .selectAll("#" + 'platform-group-' + p)
       .selectAll(".item")
@@ -108,33 +133,46 @@ function generateCharts(parameters) {
         category: parameters.category,
       }), d => JSON.stringify(d));
     
+    // Clear previous items
     t2.exit().remove();
     
+    // Create a new item and get a selector for it
     item = t2.enter().append("div").classed({item: true});
     
+    // Add the label to the item
     item.append("div")
       .classed({itemLabel: true})
       .text(d => d.category + ", " + d.value + "%");
 
+    // Add the circular chart to the item
     item.append("div").classed({iconBound: true})
-      .style({  
+      .style({
+        // Calculate the area of the dotted circle based on
+        // a theoretical 100% value
         width: Math.sqrt(parseInt(100) / Math.PI) * 18,
         height: Math.sqrt(parseInt(100) / Math.PI) * 18,
       })
       .append("div").classed({iconCircle: true})
-      .style({  
+      .style({
+        // Calculate the area of the solid white circle based
+        // on the value of the datum
         width: d => Math.sqrt(parseInt(d.value) / Math.PI) * 18,
         height: d => Math.sqrt(parseInt(d.value) / Math.PI) * 18,
       })
       .append("i").attr({
+        // Specify the icon to be used (via font-awesome)
         class: d => "icon fa fa-fw fa-" + d.platform.toLowerCase(),
       });
   });
 };
 
-// -- Running Code -- //
+
+
+
+// -- RUNNING CODE -- //
 const pc = d3.select("#platformControl");
 
+// Create platfrom controls
 pc.append("button")
   .text("All")
   .attr({
@@ -142,13 +180,13 @@ pc.append("button")
   })
   .on("click", () => {
     pc.selectAll("button").classed({selected: false});
-    parameters.platform = platforms;
+    parameters.platform = PLATFORMS;
     generateCharts(parameters);
     pc.select("#platform-all").classed({selected: true});
   });
 
 pc.selectAll(".control")
-  .data(platforms)
+  .data(PLATFORMS)
   .enter()
   .append("button").classed({control: true})
   .attr({
@@ -162,10 +200,12 @@ pc.selectAll(".control")
   })
   .text(d => d)
 
+
+// Create category controls
 const cc = d3.select("#categoryControl");
 
 cc.selectAll(".control")
-  .data(Object.keys(groups))
+  .data(Object.keys(GROUPS))
   .enter()
   .append("button").classed({control: true})
   .attr({
@@ -173,16 +213,17 @@ cc.selectAll(".control")
   })
   .on("click", (d) => {
     cc.selectAll("button").classed({selected: false});
-    parameters.category = groups[d];
+    parameters.category = GROUPS[d];
     generateCharts(parameters);
     cc.select("#category-" + d).classed({selected: true})
   })
   .text(d => d)
 
-
+// Run initial setup by generating charts and selecting corresponding buttons
 generateCharts({
-  platform: platforms,
-  category: groups.Total,
+  platform: PLATFORMS,
+  category: GROUPS.Total,
 });
-pc.select("#platform-All").classed({selected: true})
-cc.select("#category-Total").classed({selected: true})
+
+pc.select("#platform-All").classed({selected: true});
+cc.select("#category-Total").classed({selected: true});
